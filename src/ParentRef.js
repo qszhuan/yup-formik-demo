@@ -19,17 +19,18 @@ const ParentRef = () => {
         total: Yup.number().required(),
         splits: Yup.array()
           .required("must contains at least one split")
-          .when("splitType", function (splitType, schema) {
-            console.log("SPLIT TYPE:", splitType);
-            return splitType === SplitType.Percentage ?
-            schema.of(
-              Yup.number().moreThan(0, "(0, 100]").max(100, "(0, 100]")
-            )
-            :schema.of(
-                Yup.number().min(0)
-              )
-            ;
-          })
+          // Use this or the test() for items in array below
+        //   .when("splitType", function (splitType, schema) {
+        //     console.log("SPLIT TYPE:", splitType);
+        //     return splitType === SplitType.Percentage ?
+        //     schema.of(
+        //       Yup.number().moreThan(0, "(0, 100]").max(100, "(0, 100]")
+        //     )
+        //     :schema.of(
+        //         Yup.number().min(0)
+        //       )
+        //     ;
+        //   })
           .test('total amount', 'the total does not match', function(value){
               console.log(value);
               if(this.parent.splitType === SplitType.Value){
@@ -72,8 +73,9 @@ const ParentRef = () => {
                   return this.options.from[0].value.splitType ===
                     SplitType.Percentage
                     ? value <= 100 &&
-                        value >= 0 &&
-                        this.parent.reduce((a, b) => a + b, 0) === 100
+                        value >= 0 
+                        // &&
+                        // this.parent.reduce((a, b) => a + b, 0) === 100
                     : true;
                 }
               )
@@ -124,7 +126,7 @@ const ParentRef = () => {
                         +
                       </button>
                       <br />
-                      <ErrorMessage name={`splits.${index}`} />
+                      {errors.splits && typeof(errors.splits) === 'object' && <ErrorMessage name={`splits.${index}`} />}
                       <br />
                     </div>
                   ))
